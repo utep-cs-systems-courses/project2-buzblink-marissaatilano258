@@ -7,37 +7,11 @@ unsigned short x = 500;
 unsigned short sb = 0;
 char state = 0;
 char button_state = 0;
-static char b1_state =  0;
+static char b1_state = 0;
 static char b2_state = 0;
 static char b3_state = 0;
 static char b4_state = 0;
-
-char toggle_red()		/* always toggle! */
-{
-  //static char state = 0;
-
-  switch (state) {
-  case 0:
-    red_on = 1;
-    state = 1;
-    break;
-  case 1:
-    red_on = 0;
-    state = 0;
-    break;
-  }
-  return 1;			/* always changes an led */
-}
-
-char toggle_green()	/* only toggle green if red is on!  */
-{
-  char changed = 0;
-  if (red_on) {
-    green_on ^= 1;
-    changed = 1;
-  }
-  return changed;
-}
+static char dim_state = 0;
 
 char on_on_off()
 {
@@ -71,16 +45,19 @@ char off_off_on()
   switch(state){
   case 0:
     red_on = 1;
+    green_on = 1;
     state = 1;
     changed = 1;
     break;
   case 1:
     red_on = 0;
+    green_on = 1;
     state = 2;
     changed = 1;
     break;
   case 2:
     red_on = 0;
+    green_on = 1;
     state = 0;
     changed = 0;
     break;
@@ -131,6 +108,7 @@ short b1_state_machine()
     note = 0;
     red_on = 0;
     b1_state = 7;
+    button_state = 0;
     break;
   }
   return note;
@@ -156,52 +134,29 @@ short b2_state_machine()
     x = 0;
     green_on=0;
     red_on = 0;
+    button_state = 0;
     break;
   }
   return x;
 }
 
-void buzzer_advance()
-{
-  if(sb){
-    x+=225;
-  } else {
-    x-=450;
-  }
-  short y = 2000000/x;
-  buzzer_set_period(y);
-}
-
-void go_down()
-{
-  sb = 0;
-  red_on = 1;
-  green_on = 0;
-  led_changed = 1;
-  led_update();
-}
-
-void go_up()
-{
-  sb = 1;
-  red_on = 0;
-  green_on = 1;
-  led_changed = 1;
-  led_update();
-}
-
-void main_state_advance()
-{
-  //static char state = 0;
-  switch(state){
+void b3_state_machine(){
+  switch(dim_state){
   case 0:
+    red_on = 1;
+    led_changed = 1;
+    led_update();
+    break;
   case 1:
-    go_up();
-    state++;
+    led_changed = on_on_off();
+    led_update();
     break;
   case 2:
-    go_down();
-    state = 0;
+    led_changed = off_off_on();
+    led_update();
+    break;
+  default:
+    dim_state = 0;
     break;
   }
 }
@@ -226,50 +181,22 @@ void button_state_advance()
   }
 }
 
+void b1_state_advance()
+{
+  led_changed = 1;
+  buzzer_set_period(b1_state_machine());
+  led_update();
+}
+
 void b2_state_advance()
 {
   led_changed = 1;
-  led_update();
   buzzer_set_period(b2_state_machine());
+  led_update();
 }
 
-void b1_state_advance()		/* alternate between toggling red & green */
+void b3_state_advance()
 {
-  led_changed = 1;
-  led_update();
-  buzzer_set_period(b1_state_machine());
-  /*
-  char changed = 0;  
-
-  static enum {R=0, G=1} color = R;
-  switch (color) {
-  case R: changed = toggle_red(); color = R;break;
-  case G: changed = toggle_green(); color = R;break;
-  }
-
-  led_changed = changed;
-  led_update();
-  */
-  /*
-  static char led_dim_state = 0;
-  switch(led_dim_state){
-  case 0:
-    led_changed = toggle_red();
-    led_dim_state = 1;
-    break;
-  case 1:
-    led_changed = on_on_off();
-    led_dim_state = 2;
-    break;
-  case 2:
-    led_changed = off_off_on();
-    led_dim_state = 0;
-    break;
-  }
-  
-  led_update();
-  */
+  dim_state++;
+  b3_state_machine();
 }
-
-
-

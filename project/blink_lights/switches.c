@@ -33,29 +33,24 @@ switch_interrupt_handler()
   switch2_state_down = (p2val & SW2) ? 0 : 1;
   switch3_state_down = (p2val & SW3) ? 0 : 1;
   switch4_state_down = (p2val & SW4) ? 0 : 1;
-  switch_state_changed = 1;
   if(switch1_state_down){
-    red_on = 1;
-    green_on = 1;
-    led_changed = 1;
-    led_update();
+    button_state = 1;
+    button_state_advance();
   }
   if(switch2_state_down){
-    red_on = 1;
-    green_on = 0;
-    led_changed = 1;
-    led_update();
+    button_state = 2;
+    button_state_advance();
   }
   if(switch3_state_down){
-    red_on = 0;
-    green_on = 1;
-    led_changed = 1;
-    led_update();
+    button_state = 3;
+    button_state_advance();
   }
   if(switch4_state_down){
-    red_on = 0;
-    green_on = 0;
+    button_state = 4;
+    red_on = 1;
     led_changed = 1;
     led_update();
+    //button_state = 4;
+    //button_state_advance();
   }
 }
