@@ -3,11 +3,13 @@
 #include "led.h"
 #include "buzzer.h"
 
-unsigned char changed = 0;
+unsigned short x = 500;
+unsigned short sb = 0;
+char state = 0;
 
 char toggle_red()		/* always toggle! */
 {
-  static char state = 0;
+  //static char state = 0;
 
   switch (state) {
   case 0:
@@ -34,7 +36,7 @@ char toggle_green()	/* only toggle green if red is on!  */
 
 char on_on_off()
 {
-  static char state = 0;
+  //static char state = 0;
   char changed = 0;
   
   switch(state){
@@ -59,7 +61,7 @@ char on_on_off()
 
 char off_off_on()
 {
-  static char state = 0;
+  //static char state = 0;
   char changed = 0;
   switch(state){
   case 0:
@@ -84,7 +86,7 @@ char off_off_on()
 
 char switch_colors()
 {
-  static char state = 0;
+  //static char state = 0;
   switch(state){
   case 0:
     red_on = 0;
@@ -102,47 +104,100 @@ char switch_colors()
 
 short twinkle_twinkle()
 {
-  static char state = 0;
   short note = 0;
   switch(state){
   case 0:
-    note = 800;
+    note = 698;
+    red_on = 1;
     state = 1;
     break;
   case 1:
-    note = 800;
+    note = 698;
+    red_on = 0;
     state = 2;
     break;
   case 2:
-    note = 300;
+    note = 523;
+    red_on = 1;
     state = 3;
     break;
   case 3:
-    note = 300;
+    note = 523;
+    red_on = 0;
     state = 4;
     break;
   case 4:
-    note = 500;
+    note = 587;
+    red_on = 1;
     state = 5;
     break;
   case 5:
-    note = 500;
+    note = 587;
+    red_on = 0;
     state = 6;
     break;
   case 6:
-    note = 300;
+    note = 523;
+    red_on = 1;
     state = 7;
     break;
   case 7:
     note = 0;
+    red_on = 0;
     state = 7;
     break;
   }
   return note;
 }
+
+void buzzer_advance()
+{
+  if(sb){
+    x+=225;
+  } else {
+    x-=450;
+  }
+  short y = 2000000/x;
+  buzzer_set_period(y);
+}
+
+void go_down()
+{
+  sb = 0;
+  red_on = 1;
+  green_on = 0;
+  led_changed = 1;
+  led_update();
+}
+
+void go_up()
+{
+  sb = 1;
+  red_on = 0;
+  green_on = 1;
+  led_changed = 1;
+  led_update();
+}
+
+void main_state_advance()
+{
+  //static char state = 0;
+  switch(state){
+  case 0:
+  case 1:
+    go_up();
+    state++;
+    break;
+  case 2:
+    go_down();
+    state = 0;
+    break;
+  }
+}
+
 void state_advance()		/* alternate between toggling red & green */
 {
-  led_changed = switch_colors();
+  led_changed = 1;
   led_update();
   buzzer_set_period(twinkle_twinkle());
   /*
