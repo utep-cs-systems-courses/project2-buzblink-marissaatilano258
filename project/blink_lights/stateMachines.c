@@ -6,6 +6,11 @@
 unsigned short x = 500;
 unsigned short sb = 0;
 char state = 0;
+char button_state = 0;
+static char b1_state =  0;
+static char b2_state = 0;
+static char b3_state = 0;
+static char b4_state = 0;
 
 char toggle_red()		/* always toggle! */
 {
@@ -83,71 +88,77 @@ char off_off_on()
   return changed;
 }
 
-
-char switch_colors()
-{
-  //static char state = 0;
-  switch(state){
-  case 0:
-    red_on = 0;
-    green_on = 1;
-    state = 1;
-    break;
-  case 1:
-    red_on = 1;
-    green_on = 0;
-    state = 0;
-    break;
-  }
-  return 1;
-}
-
-short twinkle_twinkle()
+short b1_state_machine()
 {
   short note = 0;
-  switch(state){
+  switch(b1_state){
   case 0:
     note = 698;
     red_on = 1;
-    state = 1;
+    b1_state = 1;
     break;
   case 1:
     note = 698;
     red_on = 0;
-    state = 2;
+    b1_state = 2;
     break;
   case 2:
     note = 523;
     red_on = 1;
-    state = 3;
+    b1_state = 3;
     break;
   case 3:
     note = 523;
     red_on = 0;
-    state = 4;
+    b1_state = 4;
     break;
   case 4:
     note = 587;
     red_on = 1;
-    state = 5;
+    b1_state = 5;
     break;
   case 5:
     note = 587;
     red_on = 0;
-    state = 6;
+    b1_state = 6;
     break;
   case 6:
     note = 523;
     red_on = 1;
-    state = 7;
+    b1_state = 7;
     break;
   case 7:
     note = 0;
     red_on = 0;
-    state = 7;
+    b1_state = 7;
     break;
   }
   return note;
+}
+
+short b2_state_machine()
+{
+  static char x = 0;
+  switch(b2_state){
+  case 0:
+    x += 500;
+    green_on = 1;
+    red_on = 0;
+    b2_state = 1;
+    break;
+  case 1:
+    x-=200;
+    green_on = 0;
+    red_on = 1;
+    b2_state = 2;
+    break;
+  case 2:
+    x = 0;
+    green_on=0;
+    red_on = 0;
+    break;
+  }
+  return x;
 }
 
 void buzzer_advance()
@@ -195,11 +206,38 @@ void main_state_advance()
   }
 }
 
-void state_advance()		/* alternate between toggling red & green */
+void button_state_advance()
+{
+  switch(button_state){
+  case 1:
+    b1_state = 0;
+    break;
+  case 2:               /*Button S2*/
+    b2_state = 0;
+    break;
+  case 3:               /*Button S3*/
+    b3_state = 0;
+    break;
+  case 4:               /*Button S4*/
+    b4_state = 0;
+    break;
+  default:
+    break;
+  }
+}
+
+void b2_state_advance()
 {
   led_changed = 1;
   led_update();
-  buzzer_set_period(twinkle_twinkle());
+  buzzer_set_period(b2_state_machine());
+}
+
+void b1_state_advance()		/* alternate between toggling red & green */
+{
+  led_changed = 1;
+  led_update();
+  buzzer_set_period(b1_state_machine());
   /*
   char changed = 0;  
 

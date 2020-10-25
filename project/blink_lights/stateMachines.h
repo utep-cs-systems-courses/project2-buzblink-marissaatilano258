@@ -2,9 +2,12 @@
 #define stateMachine_included
 
 void buzzer_advance();
-void main_state_advance();
-void state_advance();
+void button_state_advance();
+void b1_state_advance();
+void b2_state_advance();
+void b3_state_advance();
+void b4_state_advance();
 
-extern char state;
+extern char state, button_state;
 
 #endif // included
