@@ -47,10 +47,6 @@ switch_interrupt_handler()
   }
   if(switch4_state_down){
     button_state = 4;
-    red_on = 1;
-    led_changed = 1;
-    led_update();
-    //button_state = 4;
-    //button_state_advance();
+    button_state_advance();
   }
 }
