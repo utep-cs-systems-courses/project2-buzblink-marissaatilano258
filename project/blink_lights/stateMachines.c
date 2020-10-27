@@ -5,7 +5,7 @@
 
 char state = 0;
 char button_state = 0;
-static short x = 0;
+static short siren_note = 0;
 static char b1_state = 0;
 static char b2_state = 0;
 static char b3_state = 0;
@@ -68,18 +68,18 @@ char off_off_on()
 
 short go_up()
 {
-  x += 200;
+  siren_note += 200;
   red_on = 1;
   green_on = 0;
-  return 2000000/x;
+  return 2000000/siren_note;
 }
 
 short go_down()
 {
-  x -= 200;
+  siren_note -= 400;
   red_on = 0;
   green_on = 1;
-  return 2000000/x;
+  return 2000000/siren_note;
 }
 
 char toggle_led()
@@ -89,7 +89,7 @@ char toggle_led()
     green_on = 1;
   } else {
     red_on = 1;
-    green_on = 0;
+    green_on =1;
   }
   return 1;
 }
@@ -214,30 +214,25 @@ short b1_state_machine()
   return 2000000/note;
 }
 
-short b2_state_machine()
+void b2_state_machine()
 {
-  static char x = 0;
-  switch(b2_state){
+  switch(siren_state){
   case 0:
-    x += 500;
-    green_on = 1;
-    red_on = 0;
-    b2_state = 1;
-    break;
   case 1:
-    x-=200;
-    green_on = 0;
-    red_on = 1;
-    b2_state = 2;
+    buzzer_set_period(go_up());
+    led_changed = 1;
+    led_update();
     break;
   case 2:
-    x = 0;
-    green_on=0;
-    red_on = 0;
-    button_state = 0;
+    buzzer_set_period(go_down());
+    led_changed = 1;
+    led_update();
+    break;
+  default:
+    siren_state = 0;
+    siren_note = 0;
     break;
   }
-  return x;
 }
 
 void b3_state_machine(){
@@ -262,24 +257,29 @@ void b3_state_machine(){
   }
 }
 
-void b4_state_machine()
+short b4_state_machine()
 {
-  switch(siren_state){
+  short note = 0;
+  switch(b4_state){
   case 0:
-    buzzer_set_period(go_up());
-    led_changed = 1;
-    led_update();
+    red_on = 0;
+    green_on = 1;
+    note = 2000000/587;
+    b4_state++;
     break;
   case 1:
-    buzzer_set_period(go_down());
-    led_changed = 1;
-    led_update();
+    red_on = 1;
+    green_on = 0;
+    note = 2000000/440;
+    b4_state++;
     break;
   default:
-    siren_state = 0;
-    x = 0;
+    red_on = 0;
+    green_on = 0;
+    note = 0;
     break;
   }
+  return note;
 }
 
 void button_state_advance()
@@ -311,19 +311,20 @@ void b1_state_advance()
 
 void b2_state_advance()
 {
-  led_changed = 1;
-  buzzer_set_period(b2_state_machine());
-  led_update();
+  siren_state++;
+  b2_state_machine();
 }
 
 void b3_state_advance()
 {
+  buzzer_set_period(0);
   dim_state++;
   b3_state_machine();
 }
 
 void b4_state_advance()
 {
-  siren_state++;
-  b4_state_machine();
+  buzzer_set_period(b4_state_machine());
+  led_changed = 1;
+  led_update();
 }

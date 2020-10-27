@@ -11,9 +11,9 @@ __interrupt_vec(WDT_VECTOR) WDT(){	/* 250 interrupts/sec */
       b3_state_machine();
     }
   }
-  if(blink_count % 50 == 00){
-    if(button_state == 4){
-      b4_state_machine();
+  if(blink_count % 50 == 0){
+    if(button_state == 2){
+      b2_state_machine();
     }
   }
   if(blink_count==250) {
@@ -31,13 +31,13 @@ __interrupt_vec(WDT_VECTOR) WDT(){	/* 250 interrupts/sec */
     }
     blink_count = 0;
   }
-  if(blink_count == 150){
+  if(blink_count == 100){
     if(button_state == 1){
       b1_state_advance();
       blink_count = 0;
     }
   }
-  if(blink_count == 125){
+  if(blink_count == 75){
     if(button_state == 1){
       buzzer_set_period(0);
     }
