@@ -89,9 +89,70 @@ char toggle_led()
     green_on = 1;
   } else {
     red_on = 1;
-    green_on =1;
+    green_on = 0;
   }
   return 1;
+}
+
+short pattern1()
+{
+  static char pattern1_state = 0;
+  short note = 0;
+  switch(pattern1_state){
+  case 0:
+    note = 659;
+    pattern1_state++;
+    break;
+  case 1:
+    note = 587;
+    pattern1_state++;
+    break;
+  case 2:
+    note = 523;
+    pattern1_state++;
+    break;
+  case 3:
+    note = 587;
+    pattern1_state= 0;
+    break;
+  default:
+    pattern1_state = 0;
+    break;
+  }
+  return note;
+}
+
+short pattern2()
+{
+  static char pattern2_state = 0;
+  short note = 0;
+  switch(pattern2_state){
+  case 0:
+    note = 659;
+    pattern2_state++;
+    break;
+  case 1:
+  case 2:
+    note = 587;
+    pattern2_state++;
+    break;
+  case 3:
+    note = 659;
+    pattern2_state++;
+    break;
+  case 4:
+    note = 587;
+    pattern2_state++;
+    break;
+  case 5:
+    note = 523;
+    pattern2_state = 0;
+    break;
+  default:
+    pattern2_state = 0;
+    break;
+  }
+  return note;
 }
 
 short b1_state_machine()
@@ -99,58 +160,36 @@ short b1_state_machine()
   short note = 0;
   switch(b1_state){
   case 0:
-    note = 659;
-    red_on = 1;
-    b1_state++;
-    break;
   case 1:
-    note = 587;
-    red_on = 0;
-    b1_state++;
-    break;
   case 2:
-    note = 523;
-    red_on = 1;
-    b1_state++;
-    break;
   case 3:
-    note = 587;
-    red_on = 0;
+    note = pattern1();
     b1_state++;
     break;
   case 4:
   case 5:
   case 6:
     note = 659;
-    red_on = 1;
     b1_state++;
     break;
   case 7:
     note = 0;
-    red_on = 1;
     b1_state++;
     break;
   case 8:
   case 9:
   case 10:
     note = 587;
-    red_on = 0;
     b1_state++;
     break;
   case 11:
     note = 0;
-    red_on = 1;
     b1_state++;
     break;
   case 12:
-    note = 659;
-    red_on = 0;
-    b1_state++;
-    break;
   case 13:
   case 14:
-    note = 784;
-    red_on = 1;
+    note = 659;
     b1_state++;
     break;
   case 15:
@@ -158,54 +197,30 @@ short b1_state_machine()
     b1_state++;
     break;
   case 16:
-    note = 659;
-    red_on = 0;
-    b1_state++;
-    break;
   case 17:
-    note = 587;
-    red_on = 1;
-    b1_state++;
-    break;
   case 18:
-    note = 523;
-    red_on = 0;
-    b1_state++;
-    break;
   case 19:
-    note = 587;
-    red_on = 0;
+    note = pattern1();
     b1_state++;
     break;
   case 20:
   case 21:
   case 22:
-  case 23:
     note = 659;
-    red_on = 0;
     b1_state++;
     break;
+  case 23:
   case 24:
   case 25:
-    note = 587;
-    b1_state++;
-    break;
   case 26:
-    note = 659;
-    b1_state++;
-    break;
   case 27:
-    note = 587;
-    b1_state++;
-    break;
   case 28:
-    note = 523;
+    note = pattern2();
     b1_state++;
     break;
   case 29:
-  case 30:
     note = 0;
-    b1_state++;
+    b1_state = 0;
     break;
   default:
     b1_state = 0;
@@ -264,13 +279,13 @@ short b4_state_machine()
   case 0:
     red_on = 0;
     green_on = 1;
-    note = 2000000/587;
+    note = 587;
     b4_state++;
     break;
   case 1:
     red_on = 1;
     green_on = 0;
-    note = 2000000/440;
+    note = 440;
     b4_state++;
     break;
   default:
@@ -279,7 +294,7 @@ short b4_state_machine()
     note = 0;
     break;
   }
-  return note;
+  return 2000000/note;
 }
 
 void button_state_advance()
@@ -304,7 +319,7 @@ void button_state_advance()
 
 void b1_state_advance()
 {
-  led_changed = 1;
+  led_changed = toggle_led();
   buzzer_set_period(b1_state_machine());
   led_update();
 }
