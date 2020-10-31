@@ -34,9 +34,12 @@ wdInterruptHandler.c   | Watch Dog Timer controls interrupts for state machine a
 You can compile this program by using the commands
 *    $make clean
 *    $make all
+
 Next plug in your MSP430 to linux
+
 The following command runs the program
 *    $make load
+
 Use the buttons on the green board of the MSP430 to use the functions of the program
 
 
