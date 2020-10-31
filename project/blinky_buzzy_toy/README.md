@@ -1,26 +1,45 @@
 ## Description
-This interrupt-driven program flashes the LEDs in a silly pattern.
+This interrupt-driven program produces different sequences based on the button
+that is pushed, including flashing the LEDs and buzzing the buzzer.
 
-## Exploration
+Press S1, and the green and red leds toggle while the buzzer plays Mary Had a
+Little Lamb
 
-_Write some some code in Assembly Language_
+Press S2, and the red and green light will indicate a rise and fall produced
+by the siren sound
 
-Translate led.c to led_s.s, and modify the Makefile to reference it.  Remember
+Press S3, and the red and green led will dim and brighten
 
-* to put global and static vars in the data segment and instructions in the
-text segment using the .data and .text directives,
-* to make global symbols visible to other modules using .global, and
-* to import external symbols from other modules with .extern
+Press S4, the flashing of the leds and buzzer will inidicate the termination
+of leds and sounds
 
-_Changing speed:_ Figure out how to flash the lights faster or slower.  Determine if there's a speed where the lights don't appear to flash... but glow instead!
+## Files
 
-_Counting to three:_  Change the program to slowly and repeatedly
-count from zero to three, displaying the value in binary using the red
-& green lights. This is simpler than the program we provided.
+The following files are included in this program.
+-buzzer.c:Intializes the buzzer and sets the period for buzzer cycles
+-buzzer.h:Header file containing all declarations of methods in buzzer.h
+-led.c: Initialize leds and defines a function to update the state of each led
+-led.h: Header file containing all declarations of methods in led.c
+-p2_interrupt_handler.c:Handles interrupts that occur on P2 of the MSP430
+-stateMachines.c: Defines all state machines used to flash leds and play songs
+on MSP430.
+-stateMachines.h:Header file containing all declarations of methods in stateMachines.c
+-switches.c:Initializes switches and updates switch interrupt sense. Also used
+to correspond the intterrupt with an appropriate state machine.
+-switches.h: Header file containing all declarations of methods in switches.c
+-toyMain.c: Configures clocks and intializes leds, buzzer, switches, and
+enables interrupts
+-wdInterruptHandler.c: Watch Dog Timer used to control interrupts for state
+machine advances
 
-## Some Advice
-When creating your own variants to the demo programs,
-it's probably a good idea to keep a copy of the original program (or really understand how _git checkout_ works).  
+##Complile and Run
+You can compile this program by using the commands
+    $make clean
+    $make all
+Next plug in your MSP430 to linux
+The following command runs the program
+    $make load
+Use the buttons on the green board of the MSP430 to use the functions of the program
 
 
 
