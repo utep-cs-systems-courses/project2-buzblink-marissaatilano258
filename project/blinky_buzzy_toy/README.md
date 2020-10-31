@@ -25,21 +25,18 @@ led.h                  | Header file containing all declarations of methods in l
 p2_interrupt_handler.c | Handles interrupts that occur on P2 of the MSP430
 stateMachines.c        | Defines all state machines used to flash leds andplay songs
 stateMachines.h        | Header file containing all declarations of methods in stateMachines.c
-switches.c             | Initializes switches, updates switch interrupt sense,
-corresponds interrupt to state machine.
+switches.c             | Initializes switches and corresponds interrupts to state machines
 switches.h             | Header file containing all declarations of methods in switches.c
-toyMain.c              | Configures clocks, intializes leds, buzzer, switches,
-and enables interrupts
-wdInterruptHandler.c   | Watch Dog Timer used to control interrupts for state
-machine advances
+toyMain.c              | Initializes leds, buzzer, switches, and enables interrupts
+wdInterruptHandler.c   | Watch Dog Timer controls interrupts for state machine advances
 
 ## Complile and Run
 You can compile this program by using the commands
-    $make clean
-    $make all
+*    $make clean
+*    $make all
 Next plug in your MSP430 to linux
 The following command runs the program
-    $make load
+*    $make load
 Use the buttons on the green board of the MSP430 to use the functions of the program
 
 
